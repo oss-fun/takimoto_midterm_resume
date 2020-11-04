@@ -1,0 +1,24 @@
+[0] Config.pm:304> INFO - This is Biber 2.14
+[0] Config.pm:307> INFO - Logfile is 'mid_report.blg'
+[108] biber-darwin:322> INFO - === 水 11  4, 2020, 04:28:08
+[128] Biber.pm:415> INFO - Reading 'mid_report.bcf'
+[236] Biber.pm:943> INFO - Found 6 citekeys in bib section 0
+[251] Biber.pm:4256> INFO - Processing section 0
+[251] Utils.pm:75> INFO - Globbing data source './mid_rep.bib'
+[251] Utils.pm:91> INFO - Globbed data source './mid_rep.bib' to ./mid_rep.bib
+[268] Biber.pm:4455> INFO - Looking for bibtex format file './mid_rep.bib' for section 0
+[269] bibtex.pm:1653> INFO - LaTeX decoding ...
+[275] bibtex.pm:1471> INFO - Found BibTeX data source './mid_rep.bib'
+[296] Utils.pm:304> WARN - year field '（参照2020-10-30）' in entry 'Pepper' is not an integer - this will probably not sort properly.
+[299] Utils.pm:304> WARN - year field '（参照2020-10-30）' in entry 'RoBoHoN' is not an integer - this will probably not sort properly.
+[308] Utils.pm:304> WARN - year field '（参照2020-11-03）' in entry 'ROSexample' is not an integer - this will probably not sort properly.
+[309] Utils.pm:304> WARN - I didn't find a database entry for 'Gazebo' (section 0)
+[309] Utils.pm:304> WARN - I didn't find a database entry for 'Docker' (section 0)
+[309] Utils.pm:304> WARN - I didn't find a database entry for 'ResourceManeger' (section 0)
+[322] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[322] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[322] Biber.pm:4084> INFO - Sorting list 'none/global//global/global' of type 'entry' with template 'none' and locale 'en-US'
+[322] Biber.pm:4090> INFO - No sort tailoring available for locale 'en-US'
+[324] bbl.pm:652> INFO - Writing 'mid_report.bbl' with encoding 'UTF-8'
+[326] bbl.pm:755> INFO - Output to mid_report.bbl
+[326] Biber.pm:128> INFO - WARNINGS: 6

@@ -2,6 +2,10 @@
 \usepackage{funinfosys}
 \usepackage{url}
 \usepackage[dvipdfmx]{graphicx}
+%\usepackage[top=10truemm,bottom=20truemm,left=15truemm,right=15truemm]{geometry}
+\usepackage[backend=biber,style=ieee]{biblatex}
+\usepackage{caption}
+\addbibresource{./mid_rep.bib}
 \author{
 b1017197 瀧本恒平\\指導教員 : 松原克弥
 }
@@ -10,73 +14,107 @@ b1017197 瀧本恒平\\指導教員 : 松原克弥
 \etitle{Implementation of a Sandbox for an OSS Function Module in Robot Control Systems}
 \eauthor{Kouhei Takimoto}
 \abstract{
-近年，様々な分野においてロボットの活用が拡がっている．このロボットを制御するシステムの開発において，ソフトウェアフレームワークの一種であるROSを用いる機会が増加している．ROSでは，ノードと呼ばれる機能モジュールを複数組み合わせることでシステムの構築を行う．ロボット制御システムの開発にROSを用いることで，OSSノードのような第三者が実装したノードをシステムに導入することが容易になり，開発効率の向上が期待できる．しかし，OSSノードがシステム内に混在することで，組み込みシステムの限られた計算資源(CPU,メモリ,ネットワーク帯域等)の消費量に関する見積もりが困難になる．本研究では，OSSノードによるシステムへの想定外の負荷を防ぐことを目的として，ノードを対象としたサンドボックスの実現を提案する．
-%本研究の実現により，ROSを用いた開発におけるOSSノードの活用促進とロボット制御システムの安定性向上が期待できる．
+% 近年，様々な分野においてロボットの活用が拡がっている．このロボットを制御するシステムの開発において，ソフトウェアフレームワークの一種であるROSを用いる機会が増加している．ROSでは，ノードと呼ばれる機能モジュールを複数組み合わせることでシステムの構築を行う．ロボット制御システムの開発にROSを用いることで，OSSノードのような第三者が実装したノードをシステムに導入することが容易になり，開発効率の向上が期待できる．
+ROSにおいて，OSSノードを組み合わせることによるロボットアプリケーションの開発が一般化している．これは，ROSの大規模なコミュニティにおいて大量のOSSノードが提供されているためである．しかし，動作の詳細を把握せずに組み込むことの多いOSSノードがシステム内に混在することで，組み込みシステムの限られた計算資源（CPU,メモリ,ネットワーク帯域等）の消費量に関する見積もりが困難になる．本研究では，OSSノードによるシステムへの想定外の負荷を防ぐことを目的として，ノードを対象としたサンドボックスの実現を提案する．本研究の実現により，ROSを用いた開発におけるOSSノードの活用を促すと共に，とロボット制御システムの安定性向上を可能とする．
 }
 \keywords{ROS, OSS, サンドボックス}
-\eabstract{In recent years, the use of robots is expanding in various fields. The use of ROS, a type of software framework, is increasingly used in the development of robot control systems. In the ROS, the system is constructed by combining multiple functional modules called nodes. By using ROS in the development of robot control systems, it is easier to introduce nodes implemented by third parties, such as OSS nodes, into the system and thus improve development efficiency. However, the mixture of OSS nodes in a system makes it difficult to estimate the consumption of limited computing resources (CPU, memory, network bandwidth, etc.) in an embedded system. In this research, we propose a node sandbox to prevent unexpected load on the system by OSS nodes.}
+\eabstract{In ROS, the development of robot applications by combining OSS nodes is becoming more and more common. This is due to the large number of OSS nodes provided by the large ROS community. However, because OSS nodes are often installed in a system without knowing the details of their operation, it is difficult to estimate the consumption of limited computing resources （CPU, memory, network bandwidth, etc.） of an embedded system. In this research, we propose a node sandbox to prevent unexpected load on the system by OSS nodes. The realization of this research promotes the use of OSS nodes in the development of ROS and makes it possible to improve the stability of robot control systems.}
 \ekeywords{ROS, OSS, sandbox}
 \begin{document}
 \maketitle
 %\vspace*{-.5cm}
 
 \section{背景}
-近年，様々な分野においてロボットの活用が拡がっている\cite{Pepper}\cite{RoBoHoN}．このロボットのシステム開発において，Robot Operating System(ROS)を用いる機会が増えている．ROSとは，ロボット開発を効率化するアプリケーションフレームワークのことであり，ノードと呼ばれる機能モジュールを複数組み合わせることでシステムを構築する．機能モジュールとは，独立した機能を持つ部品のようなもののことを指す．ノードはLinuxにおけるプロセスに相当し，その多くはオープンソースソフトウェア(OSS)として公開されている．そのため，フルスクラッチで機能を実装していた従来のロボット開発に比べて，OSSノードを用いた開発は高速かつ革新的であることから，現在のロボット開発には不可欠なフレームワークとなっている．ROSにはROS 1とROS 2が存在しており，ROS 2は単にROS 1の最新版として開発されているものではなく，あくまで別物として開発されている．ROS 2では，ROS 1で抱えていた問題点やROS 1で出来なかったことを可能にするために，通信プロトコル等アーキテクチャが大きく変更されている．そのため，ROS 1で開発したシステムをROS 2に移行する作業があるため，現在のロボット開発ではROS 1を用いることが主流となっている．しかし，ROS 2にはサポートOSの増加や開発に使用するプログラミング言語のバージョン更新等があるため，今後はROS 2の利用拡大が予想される．そのため，本研究ではROSの最新バージョンであるROS 2を使用する．
+近年，様々な分野においてロボットの活用が拡がっている\cite{Pepper}\cite{RoBoHoN}．このロボットのシステム開発において，Robot Operating System（ROS）を用いる機会が増えている．ROSとは，ロボット開発を効率化するアプリケーションフレームワークのことであり，ノードと呼ばれるロボットの機能を実現するパッケージを複数組み合わせることでシステムを構築する．このROSのコミュニティにおいて，様々なロボットに必要な共通の機能（画像処理\cite{ROSexample}など）は，オープンソースソフトウェア（OSS）のノードとして提供されている．そのため，フルスクラッチで機能を実装していた従来のロボット開発に比べて，OSSノードを用いた開発は高速であることから，ROSは現在のロボット開発において重要なフレームワークのひとつとなっている．
+%ROS 2を研究対象とする理由（省略可能？）
+ROSには，ROS 1とROS 2の二種類が存在している．先にリリースされたROS 1では，ROS独自の実装によりノード間通信を可能としていたが，マスターと呼ばれる通信相手の問い合わせを行う仕組みが単一障害点となっていた．また，サポートしているOSもUbuntuのみであるなどの制約も存在した．ROS 2では，ROS 1で抱えていた問題点や出来なかったことを可能にするために，通信プロトコル等アーキテクチャが大きく変更されている．また，ブリッジというROS 2のパッケージを用いることで，開発途中のROS 2においてROS 1のノードを使用できるようになるため，今後はROS 2の利用拡大が予想される．そのため，本研究ではROS 2を対象とする．
 
 \section{課題}
-ロボットの高機能化に伴って，ロボット制御システムにおける脆弱性の報告が増えている．特に，多種多様なOSSノードの開発が進められている\cite{AutoWare}ROSでは深刻な問題となる．ROSでは，第三者が作成したノードの動作がシステム内の他のノードの動作に影響を与える可能性がある．特に，デバイス上で共有利用している計算資源であるCPU，メモリ，ネットワーク帯域幅の消費量は，各ノードが必要とする計算資源消費量を事前に見積もることが難しい．加えて，現在のROSシステムでは，ノード毎の計算資源の管理を行うための機構が備わっていないため，ROSの分散環境におけるノードの割り当てが不均衡になり，計算資源を効率的に利用できない\cite{ResourceManeger}．図1は，実際にOSSノードを取り入れたロボット制御システム(ドローン)のイメージであり，フルスクラッチで実装した移動制御ノード，位置情報取得ノードに加え，OSSである画像処理ノードを取り入れたシステムである．図から，OSS画像処理ノードがシステム内の計算資源を専有してしまい，その影響を受けた移動制御ノードは必要分の計算資源を与えられていないことがわかる．そのため，ロボット制御システム(ドローン)の動作が不安定になっている．このように，ロボット制御システムで利用可能な計算資源の量には上限があるため，ROSでは，OSSノードのような第三者が作成した計算資源消費量の予測できないノードが，システム内の他のノードの動作に影響を与える可能性がある．
+% ロボットの高機能化にともなって，ロボット制御システムにおける脆弱性の報告が増えている\cite{ROSSec}．これは，多種多様なOSSノードを再利用し，組み合わせることでシステムを構築するROSにおいて深刻な問題となる．
+ROSでは，OSSノードの動作がシステム内の他のノードの動作に影響を与える可能性がある．OSSノードのような第三者が作成したノードは動作の詳細を把握せずにシステムに組み込むことが多いためである．図\ref{fig:before}は，実際にOSSノードを取り入れたロボット制御システム（ドローン）のイメージであり，フルスクラッチで実装した移動制御ノード，位置情報取得ノードに加え，OSSである画像処理ノードを取り入れたシステムの一例である．ここでは，OSS画像処理ノードがシステム内の計算資源を専有してしまい，その影響を受けた移動制御ノードは必要分の計算資源を与えられていない．そのため，ロボット制御システムの動作が不安定になっている．
+% このように，ロボット制御システムで利用可能な計算資源の量には上限があるため，ROSでは，OSSノードのような第三者が作成した計算資源消費量の予測できないノードが，システム内の他のノードの動作に影響を与える可能性がある．
+% 特に，デバイス上で共有利用している計算資源であるCPU，メモリ，ネットワーク帯域幅の消費量は，各ノードが必要とする計算資源消費量を事前に見積もることが難しい．加えて，現在のROSシステムでは，ノードごとの計算資源の管理を行うための機構が備わっていないため，ROSの分散環境におけるノードの割り当てが不均衡になり，計算資源を効率的に利用できない\cite{ResourceManeger}．
 
 \begin{figure}[h]
    \centering
    \includegraphics[width=7cm]{img/図1.pdf}
+   \caption{ロボット制御システムの例}
+   \label{fig:before}
 \end{figure}
-\begin{center}図1 ロボット制御システムの例\end{center}
+% \label{fig:robot control system}
+% \begin{center}図1 ロボット制御システムの例\end{center}
 
 % \section{関連技術}
 % ROSは，ロボット開発用アプリケーションフレームワークである．一般的にROSを用いて開発されたロボットは，機能ごとにノードを作成し，分散システムを構成しているため，ノードの再利用が容易である．また，ROS自体がOSSであり，無料で扱うことができるため，ロボットの研究開発分野で広く扱われている．ROSにはROS 1とROS 2が存在しており，ROS 2は単にROS 1の最新版として開発されているものではなく，あくまで別物として開発されている．ROS 2では，ROS 1で抱えていた問題点やROS 1で出来なかったことを可能にするために，通信プロトコル等アーキテクチャが大きく変更されている．そのため，ROS 1で開発したシステムをROS 2に移行する作業があるため，現在のロボット開発ではROS 1を用いることが主流となっている．しかし，ROS 2にはサポートOSの増加や開発に使用するプログラミング言語のバージョン更新等があるため，今後はROS 2の利用拡大が予想される．
 
-\section{提案する理論}
-前章までで述べたとおり，ROSを用いたロボット制御システムの開発においてOSSノードを用いることは，計算資源消費量を予測できないが故にシステム内の他のノードの動作に影響を与える可能性があるという課題がある．本研究では，OSSノードによるシステムへの想定外の負荷を防ぐことを目的として，システム内の各ノードを対象としたサンドボックスを作成し，計算資源消費量を実行時に制御することを提案する．ここでのサンドボックスとは，計算資源の最大消費可能量に制限をかける機構のことを指す．
+\section{提案する手法}
+前章までで述べたとおり，ROSを用いたロボット制御システムの開発においてOSSノードを用いることには，同一システム内の他ノードの動作に影響を与える可能性があるという課題がある．本研究では，OSSノードによるシステムへの想定外の負荷を防ぐことを目的として，システム内の各ノードを対象としたサンドボックスを作成し，計算資源消費量を実行時に制御することを提案する．ここでのサンドボックスとは，計算資源の最大消費可能量に制限をかける機構のことを指す．
+
 \subsection{サンドボックス設定のフロー}
-まず，サンドボックスの設定前に，シミュレータを用いてシステム内に存在する各ノードが使用する計算資源量の見積もりを行う．次に，見積もりの結果を踏まえて，サンドボックスで制限する計算資源の設定を行い，各ノードに対して設定が反映されたサンドボックスを導入する．これにより，図2のようにOSS画像処理ノードの使用可能な計算資源量の上限がコントロールされ，移動制御ノードは必要とする分の計算資源を使用できる．そのため，不安定であったロボット制御システム(ドローン)の動作が安定するようになる．
+まず，サンドボックスの設定前に，シミュレータを用いて各ノードが使用する計算資源量の見積もりを行う．次に，見積もり結果から，サンドボックスで制限する計算資源量の上限を設定し，各ノードに対応したサンドボックスを作成する．これにより，図\ref{fig:after}のようにOSS画像処理ノードの使用可能な計算資源量の上限がコントロールされ，移動制御ノードは必要とする分の計算資源を使用できる．そのため，不安定であったロボット制御システムの動作が安定するようになる．
 
 \begin{figure}[h]
    \centering
-   \includegraphics[width=7cm]{img/図2.pdf}
+   \includegraphics[width=7cm]{img/図2.pdf}
+   \caption{サンドボックス導入後のロボット制御システムの例}
+   \label{fig:after}
 \end{figure}
-\begin{center}図2 サンドボックス導入後のロボット制御システムの例\end{center}
 
 \subsection{ノードの計算資源消費量見積もり手法}
-ノードの計算資源消費量の見積もりは，ノード動作中の各計算資源消費量を一定間隔で記録する機能をROSフレームワークに組み込み，Gazeboを用いてシミュレーションを行うことで実現する．Gazeboとは，ROSで一般的に用いられるシミュレーションツールのことであり，これを用いることでシステムを模擬的に動かすことができる．この計算資源消費量の記録には，Linuxのprocfsと，帯域幅監視ツールの一つであるNetHogsを使用する．procfsとは，プロセス情報の擬似ファイルシステムであり，ここではCPUとメモリの使用率の表示に使用する．また，NetHogsは，プロセス毎のトラフィックを表示するものであり，ここではネットワーク帯域幅の表示に使用する．これらの出力結果の必要な部分のみを取りまとめたファイルを作成・保存し，一定間隔でデータの更新を行い，このファイルの内容を基に見積もりを行う．
+まず，ロボットを実環境で動作させる前に，各ノードが消費するおおよその計算資源量を見積もる必要がある．そのため，Gazebo\cite{Gazebo}によってロボットを仮想環境で動作させる．Gazeboとは，ROSとの連携が充実したオープンソースの3Dロボットシミュレータである．これにより，各ノードを擬似的に動作させ，その動作中の各計算資源量を一定間隔で計測し，計算資源量を見積もる．この計算資源消費量の計測には，Linuxのprocfsと，帯域幅監視ツールの一つであるNetHogsを使用する．procfsとは，プロセス情報の擬似ファイルシステムであり，ここではCPUとメモリの使用率の取得に使用する．また，NetHogsは，プロセスごとのトラフィック量を取得するものであり，ここではネットワーク帯域幅の取得に使用する．これらの取得したデータをもとに見積もりを行う．
+
 \subsection{サンドボックスの作成}
-本研究におけるサンドボックス機構は，cgroupとtcコマンドを用いて，ノード毎の計算資源における最大消費量に対して制限を課すことで実現する．cgroupとは，ROSの動作プラットフォームであるLinux上で動作するコンテナ型仮想化機構の一つであり，プロセスグループの計算資源の利用を制限・隔離するLinuxカーネルの機能のことを指す．また，tcコマンドは，Linuxカーネル内の通信を制御するものであり，ネットワークインターフェースに対してネットワーク帯域制限を設定する機能を指す．cgroupについては，cgroup v1の改良版であるcgroup v2を主に使用する．しかし，cgroup v2は徐々に実装を進めている段階であるため，v1で使用されていた機能全てを使えるわけではない．そのため，cgroup v1とv2を共存させる形で使用する．cgroupの操作には，基本的にcgroupfsという擬似ファイルシステムを用いる．新たにcgroupを作成する際も，通常のファイルシステムを扱うようにmkdirコマンドを用いることが可能である．また，制限を行う際には，cgroupのサブシステムを用いる．サブシステムとは，linuxのプロセスに作用するリソースコントローラーのことを指す．具体的にcgroupを用いてノードの計算資源消費量の制限を行うには，まずcgroupを作成し，ノードのPIDをcgroup.procsに登録する．その後，計算資源消費量の上限値をcpu.max等のサブシステムに書き込むことで，CPU使用率とメモリ使用率の制限を完了できる．また，ネットワーク帯域幅の制限についても，cgroupのnet_clsサブシステムを用いて，パラメータとネットワークインタフェースを設定することで，制限を完了できる．これらの設定を行うことで，本研究におけるサンドボックスの作成とする．
+本研究におけるサンドボックスとは，cgroup と tc コマンドを用いて，ノードごとの計算資源における最大消費量に対して制限を課す機構である．cgroupとは，ROSの動作プラットフォームであるLinux上で動作するコンテナ型仮想化技術の一つであり，グループ化されたプロセスの計算資源の利用を制限するLinuxカーネルの機能である．また，tcコマンドは，ネットワークインターフェースに対してネットワーク帯域制限を設定する機能である．cgroupについては，cgroup v1の改良版であるcgroup v2を主に使用する．しかし，cgroup v2は比較的新しい機能であるため，v1で使用されていた機能全てを使えるわけではない．そのため，cgroup v1とv2を共存させる形で使用する．cgroup v1では設定した計算資源量の上限を超過するとプロセスが停止してしまうが，cgroup v2であればプロセスを停止させずに計算資源消費量を抑えることができる．cgroupの操作には，基本的にcgroupfsという擬似ファイルシステムを用いる．新たにcgroupを作成する際も，通常のファイルシステムを扱うようにmkdirコマンドを用いることが可能である．また，制限を行う際には，cgroupのサブシステムを用いる．サブシステムとは，linuxのプロセスに作用する計算資源制御機能のことを指す．具体的にcgroupを用いてノードの計算資源消費量の制限を行うには，まずcgroupを作成し，ノードのPIDをcgroup.procsに登録する．その後，計算資源消費量の上限値をcpu.max等のサブシステムに書き込むことで，CPU使用率とメモリ使用率の制限を完了できる．また，ネットワーク帯域幅の制限についても，cgroupのnet\_clsサブシステムを用いて，パラメータとネットワークインタフェースを設定することで，制限を完了できる．これらの設定を行うことで，本研究におけるサンドボックスを作成する．
 
 \section{関連技術}
-% \subsection{コンテナ}
-本研究の関連技術として，一般にコンテナと呼ばれる，アプリケーションコンテナがある．このアプリケーションコンテナの一例として，Docker\cite{Docker}が存在する．Dockerは，Linuxカーネルの機能であるcgroupとnamespaceを用いて計算資源の制限と分離が可能であることに加え，コンテナの実行に必要なパッケージの共有が容易であるなど，高い機能性を持つ．しかし，Dockerでは，本研究において求めている以上に機能があるため，オーバーヘッドがかかる．そのため，本研究では，コンテナ型仮想化機構の一つであるcgroupとlinuxのtcコマンドを用いて，ノードの計算資源消費量の制限に特化したサンドボックスを作成する．
-Fukutomiらは，ROS分散環境においてノードを動作させるホストマシン上の計算資源を効率的に利用するための計算資源管理機構を提案した\cite{ResourceManeger}．この研究では，計算資源使用率が一定に達したノードを動的に他のホストマシンに移行することで，分散環境上でも効率的にノードを動作させることを可能としている．このことから，ROS分散環境における計算資源管理機構の運用には，計算資源の利用状況を逐一管理する必要があることがわかる．
-%しかし，状態を保存する必要のあるノードを移行する場合，ノードの状態を一旦別の場所に保存しておく必要があるため，余分なオーバーヘッドがかかる．本研究では，シミュレータを用いてシステムを擬似的に動かすことで，ノードの移行無し
+本研究の関連技術として，一般にコンテナ型仮想化技術と呼ばれる，アプリケーションコンテナがある．このアプリケーションコンテナの一例として，Docker\cite{Docker}が存在する．Dockerは，Linuxカーネルの機能であるcgroupとnamespaceを用いて計算資源の制限と分離が可能であることに加え，コンテナの実行に必要なパッケージの共有が容易であるなど，多くの機能を持つ．そのため，Dockerは計算資源の制御に特化しているcgroupと比べてオーバーヘッドがかかる．本研究では，コンテナ型仮想化機構の一つであるcgroupとlinuxのtcコマンドを用いて，ノードの計算資源消費量の管理に特化したサンドボックスを作成する．
+Fukutomiらは，ROS分散環境においてノードを動作させるホストマシン上の計算資源を効率的に利用するための計算資源管理機構を提案した\cite{ResourceManeger}．この研究では，計算資源使用率が一定に達したノードを動的に他のホストマシンに移行することで，分散環境上でも効率的にノードを動作させることを可能としており，本研究とはノードの計算資源消費量を制限せずにノードの動的移行を行うという点で異なっている．しかし，Fukutomiらの実現手法ではノードの移行を行う際，ノードが保持しているデータのバックアップを取る必要があり，手間がかかる．このことから，ROS分散環境における計算資源管理機構の運用は，計算資源消費量を監視して動的にノードを移行するよりも，計算資源の利用状況を事前に把握した上で管理する必要がある．
 
 \section{まとめ}
-本研究では，OSSノードがシステムに与える影響を最小限に抑えることを目的とする．この目的を達成するために，各ノードの計算資源消費量を実行時に制限するサンドボックス機構を実装する．具体的には，Gazeboシミュレータ上でノードを動作させ，Linuxのprocfsと帯域幅監視ツールの一つであるNetHogsを用いて計算資源消費量を記録し，これを基に計算資源消費量の見積もりを行う．見積もり結果より，コンテナ型仮想化機構の一つであるcgroupsとtcコマンドを用いて，ノード毎のCPU，メモリ，ネットワーク帯域の各計算資源における最大消費量に対して制限を課すことでサンドボックス機構を実現する．今後の課題として，ノードの計算資源消費量の見積り手法がある．シミュレータ上でノードにどのような動作をさせるか，ノードを動かす期間をどうするかについて，基準を設ける必要がある．ここで設けた基準が正確でなければ，サンドボックスを用いてシステムの計算資源消費量に上限を設けていても，本研究が期待する効果は得ることができないため，最も重要な部分である．また，計算資源消費量の記録を更新する間隔についても検討が必要である．
+本研究では，OSSノードがシステムに与える影響を最小限に抑えることを目的とする．この目的を達成するために，各ノードの計算資源消費量を実行時に制限するサンドボックス機構を実装する．具体的には，Gazeboシミュレータ上でノードを動作させ，Linuxのprocfsと帯域幅監視ツールの一つであるNetHogsを用いて計算資源消費量を記録し，これを基に計算資源消費量の見積もりを行う．見積もり結果より，コンテナ型仮想化機構の一つであるcgroupsとtcコマンドを用いて，ノードごとのCPU，メモリ，ネットワーク帯域の各計算資源における最大消費量に対して制限を課すことでサンドボックス機構を実現する．今後の課題として，ノードの計算資源消費量の見積もり手法がある．シミュレータ上でノードにどのような動作をさせるか，システムを動作させる期間をどうするかについて，システムを安全かつ効率的に動作させるための基準を設ける必要がある．ここで設けた基準が正確でなければ，サンドボックスを用いてシステムの計算資源消費量に上限を設けていても，本研究が期待する効果は得ることができない．基準について，どのようにして定めるのか，本研究が期待する効果を得るための基準とは何なのか考察する必要がある．また，計算資源消費量を計測する間隔についても検討が必要である．
+
 \section{知能システムコースにおける本研究の位置づけ}
 知能システムコースでは，知能に関する課題および人と人工物の新たな関係性を構成論的な手法で追究する観点から、人の知的能力や機能の解明、数理モデル化、実世界への実装に関する具体的な課題に取り組み、その結果の評価を通じて、新しい方法論や、学問領域を切り拓く能力を育むことをカリキュラムポリシーとして掲げている．\\本研究では，ROSという実世界への実装を補助する技術における課題を構成論的な手法で追究している．今後は実装を行い，サンドボックス導入前と導入後で各ノードの計算資源消費量がどう変化したか，またシステムの動作パフォーマンスがどう変化するかを評価する．
 
+%\printbibliography[title=参考文献]
+
 \begin{thebibliography}{99}
   \bibitem{Pepper}
-  SoftBank：特集 \textbar ロボット\textbar ソフトバンク，\\入手先\textless https://www.softbank.jp/\\robot/special/\textgreater(参照2020-10-30)．
+  \begin{flushleft}
+  SoftBank：特集 \textbar ロボット\textbar ソフトバンク，入手先\textless https://www.softbank.jp/robot/special/\textgreater（参照2020-10-30）．
+  \end{flushleft}
   \bibitem{RoBoHoN}
-    SHARP CORPORATION：ロボホン，\\入手先\textless https://robohon.com/co/\\introduction.php\textgreater(参照2020-10-30)．
-  \bibitem{RobotSecure}
-  齋藤慶太，森達哉：コンシュマー向けロボットの安全な運用に向けたセキュリティポリシー，コンピュータセキュリティシンポジウム2017論文集，Vol.2017，No.2，pp.1426-1433(2017)．
-  \bibitem{AutoWare}
-  Computing Platforms Federated \\Laboratory：CPFL/Autoware\_Toolbox，\\入手先\textless https://github.com/CPFL/\\Autoware\_Toolbox\textgreater(参照2020-10-30)．
+  \begin{flushleft}
+    SHARP CORPORATION：ロボホン，入手先\textless https://robohon.com/co/introduction.php\textgreater（参照2020-10-30）．
+    \end{flushleft}
+  \bibitem{ROSexample}
+  \begin{flushleft}
+  Patrick Mihelich，James Bowman：ros-perception/image\_common，入手先\textless https://github.com/ros-perception/image_common\textgreater（参照2020-11-03）．
+  \end{flushleft}
+  \bibitem{ROSSec}
+  \begin{flushleft}
+  DiLuoffo,V., Michalson,R.W. and Sunar,B.：Robot Operating System 2: The need for a holistic security approach to robotic architectures，Proc.IJARS 2018，pp.1-15，SAGE Journals（2018）.
+  \end{flushleft}
+  \bibitem{Gazebo}
+  \begin{flushleft}
+  2014OpenSource Robotics Foundation：Gazebo，入手作\textless http://gazebosim.org/\textgreater（参照2020-11-04）
+  \end{flushleft}
+  % \bibitem{RobotSecure}
+  % 齋藤慶太，森達哉：コンシュマー向けロボットの安全な運用に向けたセキュリティポリシー，コンピュータセキュリティシンポジウム2017論文集，Vol.2017，No.2，pp.1426-1433（2017）．
+  % \bibitem{AutoWare}
+  % Computing Platforms Federated \\Laboratory：CPFL/Autoware\_Toolbox，\\入手先\textless https://github.com/CPFL/\\Autoware\_Toolbox\textgreater（参照2020-10-30）．
   \bibitem{ResourceManeger}
-  Fukutomi,D.，Azumi,T.，Kato,S.，et al.：Resource Manager for Scalable \\Performance in ROS Distributed \\Environments，Proc.DATE 2019，pp.1088-1093，IEEE(2019)．
+  \begin{flushleft}
+  Fukutomi,D.，Azumi,T.，Kato,S.，et al.：Resource Manager for Scalable Performance in ROS Distributed Environments，Proc.DATE 2019，pp.1088-1093，IEEE（2019）．
+  \end{flushleft}
   \bibitem{LinuxMan}
-  Michael Kerrisk:cgroups(7)-Linux manual page，man7.org，入手先\\\textless https://man7.org/linux/man-pages/\\man7/cgroups.7.html\textgreater(参照2020-10-30)．
+  \begin{flushleft}
+  Michael Kerrisk：cgroups（7）-Linux manual page，man7.org，入手先\textless https://man7.org/linux/man-pages/man7/cgroups.7.html\textgreater（参照2020-10-30）．
+  \end{flushleft}
   \bibitem{Docker}
-  Docker Documentation\textbar Docker \\Documentation, 入手先\\\textless https://docs.docker.com/\textgreater\\(参照2020-11-01)．
+  \begin{flushleft}
+  Docker Documentation\textbar Docker Documentation, 入手先\textless https://docs.docker.com/\textgreater（参照2020-11-01）．\end{flushleft}
+
 \end{thebibliography}
 \end{document}
 %
