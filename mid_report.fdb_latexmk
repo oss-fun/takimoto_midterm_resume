@@ -1,9 +1,9 @@
 # Fdb version 3
-["dvipdf"] 1604537194 "mid_report.dvi" "mid_report.pdf" "mid_report" 1604537196
-  "mid_report.dvi" 1604537194 27668 44541585bb13a5c630d2201c27e22fce "latex"
+["dvipdf"] 1604552189 "mid_report.dvi" "mid_report.pdf" "mid_report" 1604552191
+  "mid_report.dvi" 1604552189 26332 05ef625542a4fd6dedfb64a505a4139c "latex"
   (generated)
   "mid_report.pdf"
-["latex"] 1604537193 "mid_report.tex" "mid_report.dvi" "mid_report" 1604537196
+["latex"] 1604552188 "mid_report.tex" "mid_report.dvi" "mid_report" 1604552191
   "/usr/local/texlive/2020/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
@@ -43,9 +43,9 @@
   "img/after.pdf" 1596543624 77872 09432e77c5b5637e4aaf0191bff70d20 ""
   "img/before.pdf" 1596543578 74391 669fe17ba1e5d7c1640a353ee71a3772 ""
   "img/nodeExp.pdf" 1604489256 36796 db6b56d33ae9be3bbcebcbe8914be50b ""
-  "mid_report.aux" 1604537194 1992 03637ccb1aeb0f892979083e0a49813b "latex"
-  "mid_report.tex" 1604537193 20683 1edbbafaa1be3bf04958d74485ec3b82 ""
+  "mid_report.aux" 1604552189 1974 21351b44077c46428c5cb76b6fafa100 "latex"
+  "mid_report.tex" 1604552188 22001 9cb9cf660887da93201ddc2243794e60 ""
   (generated)
-  "mid_report.aux"
-  "mid_report.dvi"
   "mid_report.log"
+  "mid_report.dvi"
+  "mid_report.aux"

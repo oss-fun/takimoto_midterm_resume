@@ -62,9 +62,9 @@ INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
-OUTPUT mid_report.dvi
 INPUT img/nodeExp.pdf
 INPUT extractbb -B cropbox -O img/nodeExp.pdf
+OUTPUT mid_report.dvi
 INPUT img/before.pdf
 INPUT extractbb -B cropbox -O img/before.pdf
 INPUT img/after.pdf
